@@ -37,6 +37,7 @@ Para levantar Back + front + DB
 
 
 Abre `http://localhost:5173`
+Verificar back: `http://localhost:8080/swagger-ui/index.html#/`
 
 ---
 
