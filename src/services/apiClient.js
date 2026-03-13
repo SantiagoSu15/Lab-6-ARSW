@@ -65,7 +65,7 @@ const blueprintsApi = {
       throw new Error(error.response.data.message)
     })
     return response.data
-  },
+  }
 }
 
 
