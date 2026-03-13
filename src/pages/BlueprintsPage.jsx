@@ -23,10 +23,14 @@ export default function BlueprintsPage() {
     [items],
   )
 
-  const getBlueprints = () => {
+  const getBlueprints = async ()  => {
     if (!authorInput) return
     setSelectedAuthor(authorInput)
-    dispatch(fetchByAuthor(authorInput))
+    try {
+       await dispatch(fetchByAuthor(authorInput)).unwrap()
+    } catch (error) {
+      alert(error.message)
+    }  
   }
 
   const openBlueprint = (bp) => {
