@@ -175,6 +175,72 @@ VITE_USE_MOCK=true
 - `npm run format` – Prettier
 - `npm test` – Vitest
 
+## Pruebas con Vitest + Testing Library
+
+Se incluyen pruebas completas para los componentes principales y la lógica Redux:
+
+### Ejecución de pruebas
+
+```bash
+# Ejecutar todas las pruebas en modo batch
+npm test
+
+# Ver pruebas en modo interactivo con UI
+npm run test:ui
+
+# Ejecutar un archivo específico
+npm test -- BlueprintCanvas.test.jsx
+```
+
+### Cobertura de pruebas
+
+#### **BlueprintCanvas.test.jsx**
+Valida el renderizado del canvas:
+- Renderizado del elemento canvas en el documento
+- Llamada a `getContext('2d')` en el ciclo de vida
+- Limpieza y dibujo del fondo
+- Dibujo de la grilla (líneas horizontales y verticales)
+- Dibujo de puntos individuales y conexiones entre puntos
+- Aplicación de estilos CSS
+- Actualización reactiva cuando cambian los puntos
+
+#### **BlueprintForm.test.jsx**
+Valida el envío y la interacción del formulario:
+- Renderizado de todos los campos (autor, nombre, puntos JSON)
+- Valores por defecto en inputs
+- Actualización dinámica de campos con interacciones de usuario
+- Envío correcto del formulario con puntos parseados
+- Manejo de JSON inválido con alerta de error
+- Validación de clases CSS en elementos
+
+#### **blueprintsSlice.test.jsx**
+Valida la lógica Redux y los reducers:
+- Estado inicial correcto
+- Manejo del ciclo de vida de thunks asincronos (`pending`/`fulfilled`/`rejected`)
+- `fetchAuthors` – obtiene lista de autores
+- `fetchByAuthor` – obtiene blueprints de un autor
+- `fetchBlueprint` – obtiene un blueprint específico
+- `createBlueprint`, `addPointToBlueprint`, `deleteBlueprint` – operaciones CRUD
+- Selector `top5Blueprints` – obtiene top 5 ordenados por cantidad de puntos
+- Dispatch e integración con Redux store
+
+#### **BlueprintsPage.test.jsx**
+Valida la integración completa de componentes con Redux:
+- Renderizado de estructura y elementos principales
+- Manejo de states (`loading`, `idle`, sin datos)
+- Interacciones con inputs
+- Dispatch correcto de acciones Redux:
+  - `fetchAuthors` al montar el componente
+  - `fetchByAuthor` al buscar por autor
+  - `fetchBlueprint` al abrir un blueprint
+- Validación de tabla con blueprints
+- Cálculo correcto de totales de puntos
+- Manejo de errores y alertas
+
+### Para testing con Canvas
+
+El archivo `tests/setup.js` incluye un mock de `HTMLCanvasElement.prototype.getContext` para permitir que jsdom (el ambiente de testing) pueda ejecutar pruebas que involucren el canvas.
+
 ---
 
 ### Extensiones propuestas del reto
