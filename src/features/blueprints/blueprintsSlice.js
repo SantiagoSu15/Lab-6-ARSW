@@ -73,6 +73,7 @@ const slice = createSlice({
       })
       //por autor
       .addCase(fetchByAuthor.fulfilled, (s, a) => {
+        s.status = 'succeeded'
         s.byAuthor[a.payload.author] = a.payload.items
       })
       .addCase(fetchByAuthor.rejected, (s, a) => {
@@ -85,6 +86,7 @@ const slice = createSlice({
       })
       //por blueprint
       .addCase(fetchBlueprint.fulfilled, (s, a) => {
+        s.status = 'succeeded'
         s.current = a.payload
       })
 
@@ -98,6 +100,7 @@ const slice = createSlice({
       })
       //crear blueprint
       .addCase(createBlueprint.fulfilled, (s, a) => {
+        s.status = 'succeeded'
         const bp = a.payload
         if (s.byAuthor[bp.author]) s.byAuthor[bp.author].push(bp)
       })
@@ -111,6 +114,7 @@ const slice = createSlice({
       })
       //agregar punto a blueprint
       .addCase(addPointToBlueprint.fulfilled, (s, a) => {
+        s.status = 'succeeded'
         const bp = a.payload
         if (s.byAuthor[bp.author]) s.byAuthor[bp.author].push(bp)
       })
@@ -124,6 +128,7 @@ const slice = createSlice({
       })
       //eliminar blueprint
       .addCase(deleteBlueprint.fulfilled, (s, a) => {
+        s.status = 'succeeded'
         const bp = a.payload
         if (s.byAuthor[bp.author]) s.byAuthor[bp.author] = s.byAuthor[bp.author].filter((item) => item.name !== bp.name)
         

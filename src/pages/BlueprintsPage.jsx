@@ -6,13 +6,18 @@ import {
   fetchBlueprint,
 } from '../features/blueprints/blueprintsSlice.js'
 import BlueprintCanvas from '../components/BlueprintCanvas.jsx'
+import { useNavigate } from 'react-router-dom'
+
+
+
 
 export default function BlueprintsPage() {
   const dispatch = useDispatch()
-  const { byAuthor, current, status } = useSelector((s) => s.blueprints)
+  const { byAuthor, current, status,error  } = useSelector((s) => s.blueprints)
   const [authorInput, setAuthorInput] = useState('')
   const [selectedAuthor, setSelectedAuthor] = useState('')
   const items = byAuthor[selectedAuthor] || []
+  const navigate = useNavigate()
 
   useEffect(() => {
     dispatch(fetchAuthors())
@@ -29,13 +34,22 @@ export default function BlueprintsPage() {
     try {
        await dispatch(fetchByAuthor(authorInput)).unwrap()
     } catch (error) {
-      alert(error.message)
     }  
   }
 
   const openBlueprint = (bp) => {
     dispatch(fetchBlueprint({ author: bp.author, name: bp.name }))
+    navigate(`/blueprints/${bp.author}/${bp.name}`)
   }
+
+  const retry = () => {
+    if (selectedAuthor) dispatch(fetchByAuthor(selectedAuthor))
+      console.log('retry')
+  }
+
+
+
+  
 
   return (
     <div className="grid" style={{ gridTemplateColumns: '1.1fr 1.4fr', gap: 24 }}>
@@ -112,6 +126,23 @@ export default function BlueprintsPage() {
                 </tbody>
               </table>
             </div>
+          )}
+          {status === 'failed' && error && (
+            <div style={{
+              background: '#7f1d1d',
+              color: '#fca5a5',
+              padding: '12px 16px',
+              borderRadius: 8,
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              gap: 12,
+            }}>
+            <span> {error}</span>
+            <button className="btn" onClick={retry}>
+               Reintentar
+            </button>
+          </div>
           )}
           <p style={{ marginTop: 12, fontWeight: 700 }}>Total user points: {totalPoints}</p>
         </div>
