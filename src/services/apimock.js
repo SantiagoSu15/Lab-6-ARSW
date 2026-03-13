@@ -39,7 +39,7 @@ const mockData = [
     getByAuthor: async (author) =>
       mockData.filter((bp) => bp.author === author),
   
-    getByAuthorAndName: async (author, name) =>
+    getByAuthorAndBluePoint: async (author, name) =>
       mockData.find((bp) => bp.author === author && bp.name === name) || null,
   
     create: async (blueprint) => {
