@@ -241,7 +241,98 @@ Valida la integración completa de componentes con Redux:
 
 El archivo `tests/setup.js` incluye un mock de `HTMLCanvasElement.prototype.getContext` para permitir que jsdom (el ambiente de testing) pueda ejecutar pruebas que involucren el canvas.
 
----
+## Configuración de CORS
+
+### Implementación en el Backend (Java/Spring)
+
+```java
+@Configuration
+@EnableWebSecurity
+public class SecurityConfig {
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        http.cors()
+           .and()
+           .csrf().disable()
+           .authorizeRequests()
+           .antMatchers("/api/auth/login").permitAll()
+           .antMatchers("/api/blueprints/**").authenticated()
+           .anyRequest().authenticated()
+           .and()
+           .httpBasic();
+        return http.build();
+    }
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowedOrigins(Arrays.asList("http://localhost:5173"));
+        config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        config.setAllowedHeaders(Arrays.asList("*"));
+        config.setAllowCredentials(true);
+        
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config);
+        return source;
+    }
+}
+```
+
+### Implementación en el Cliente (React/Axios)
+
+El cliente React utiliza **Axios** con interceptores para manejar JWT y CORS. La configuración en `src/services/apiClient.js`:
+
+```javascript
+import axios from 'axios'
+
+const apiClient = axios.create({
+  baseURL: import.meta.env.VITE_API_BASE_URL,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  withCredentials: true, // Incluir cookies en requests CORS
+})
+
+// Interceptor para agregar JWT al header Authorization
+apiClient.interceptors.request.use((config) => {
+  const token = localStorage.getItem('token')
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`
+  }
+  return config
+})
+
+// Interceptor para manejar errores de autenticación
+apiClient.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      localStorage.removeItem('token')
+      window.location.href = '/login'
+    }
+    return Promise.reject(error)
+  }
+)
+
+export default apiClient
+```
+
+### Headers CORS Enviados
+
+El navegador automáticamente envía headers CORS:
+- `Origin: http://localhost:5173` – indica el origen de la solicitud
+- `Access-Control-Request-Method: POST` – informa qué método HTTP se usará
+
+### Respuestas CORS del Backend
+
+El backend responde con:
+```
+Access-Control-Allow-Origin: http://localhost:5173
+Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS
+Access-Control-Allow-Headers: Content-Type, Authorization
+Access-Control-Allow-Credentials: true
+Access-Control-Max-Age: 3600
+```
 
 ### Extensiones propuestas del reto
 
